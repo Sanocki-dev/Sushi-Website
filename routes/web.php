@@ -3,7 +3,6 @@
 use App\Model;
 
 Route::get('/', 'MenuController@index')->name('home');
-Route::get('/about', 'MenuController@about');
 Route::get('/login', 'SessionsController@create');
 Route::post('/login', 'SessionsController@store');
 Route::get('/logout', 'SessionsController@destroy');
@@ -22,6 +21,11 @@ Route::get('/orderPayment', 'MenuController@orderPayment');
 Route::post('/orderPayment', 'MenuController@orderPayment');
 
 Route::get('/editMenu', 'MenuController@editMenu');
+Route::get('/editMenuItem/{menu_ID}', 'MenuController@editMenuItem');
+Route::post('/editMenuItem/{menu_ID}', 'MenuController@saveEdit');
+Route::get('/deleteMenuItem/{menu_ID}', 'MenuController@deleteItem');
+Route::post('/editMenu', 'MenuController@addItem');
+
 Route::get('/currentOrders', 'MenuController@currentOrders');
 Route::get('/salesReport', 'MenuController@salesReport');
 

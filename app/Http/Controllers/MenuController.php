@@ -10,6 +10,7 @@ use App\OrderedItems;
 use App\MenuSection;
 use App\MenuItems;
 use App\PaymentType;
+use Hamcrest\Core\HasToString;
 
 class MenuController extends Controller
 {
@@ -17,11 +18,6 @@ class MenuController extends Controller
     {
     	return view('menu.index');
     } 
-
-    public function about()
-   	{
-   		return view('menu.about');
-   	}
 
    	public function menu()
    	{
@@ -84,7 +80,6 @@ class MenuController extends Controller
 
     public function orderItems()
     {
-      // dd(request()->all());
       tbl_invoice::create([
         'pay_ID' => request('payment_type'), 
         'id' => auth()->id(), 
@@ -111,7 +106,62 @@ class MenuController extends Controller
 
     public function editMenu()
     {
-      return view('menu.editMenu');
+      $menu_item = MenuItems::all()->sortBy('section_ID');;
+      $sections = MenuSection::all();
+      return view('menu.editMenu', compact('menu_item', 'sections'));
+    }
+
+    public function editMenuItem($id)
+    {
+      $menu_item = MenuItems::find($id);
+      $sections = MenuSection::all();
+      return view('menu.editMenuItem', compact('menu_item', 'sections'));
+    }
+
+    public function addItem()
+    {
+      MenuItems::create([
+        'section_ID' => request('section'),
+        'name' => request('name'), 
+        'price' => request('price'),
+        ]);
+
+          session()->flash('success', "Item has been added to the menu.");
+
+        return redirect('/editMenu');
+    }
+
+    public function deleteItem($id)
+    {
+      $menu_item = MenuItems::find($id);
+
+      if ($menu_item->delete())
+      {
+        session()->flash('success', "$menu_item->name has been removed from the menu.");
+      }
+      
+        return redirect('/editMenu');
+    }
+
+    public function saveEdit($id)
+    {
+      $this->validate(request(),[
+        'name' => 'required|max:255',
+        'price' => 'required'
+      ]);
+
+      $menu_item = MenuItems::find($id);
+
+      $menu_item->section_ID = request('section');
+      $menu_item->name = request('name');
+      $menu_item->price = request('price');
+        
+      if ($menu_item->save())
+      {
+        session()->flash('success','Item Successfully updated');
+      }
+      
+        return redirect('/editMenu');
     }
 
     public function currentOrders()
