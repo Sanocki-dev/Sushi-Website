@@ -9,8 +9,11 @@ Route::get('/logout', 'SessionsController@destroy');
 Route::get('/register', 'RegistrationController@create');
 Route::post('/register', 'RegistrationController@store');
 Route::get('/menu', 'MenuController@menu');
-Route::get('/orderMenu', 'MenuController@orderMenu');
-Route::post('/orderSummary', 'MenuController@orderSummary');
+Route::get('/orderMenu', 'MenuController@orderMenu')->name('menu.orderMenu');
+Route::get('/orderSummary', 'MenuController@orderSummary');
+Route::post('/orderSummary', 'MenuController@postCheckout');
+// Route::get('/checkout', 'MenuController@getCheckout')->name('checkout');
+// Route::post('/checkout', 'MenuController@postCheckout')->name('checkout');
 Route::get('/history', 'MenuController@history');
 Route::get('/forgotPassword', 'SessionsController@forgotPassword');
 Route::get('/account', 'MenuController@account');
@@ -19,6 +22,8 @@ Route::get('/orderHistory', 'MenuController@show');
 Route::post('/orderItems', 'MenuController@orderItems');
 Route::get('/orderPayment', 'MenuController@orderPayment');
 Route::post('/orderPayment', 'MenuController@orderPayment');
+
+Route::get('/add-to-cart/{id}', 'MenuController@addToCart');
 
 Route::get('/editMenu', 'MenuController@editMenu');
 Route::get('/editMenuItem/{menu_ID}', 'MenuController@editMenuItem');

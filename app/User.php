@@ -10,6 +10,9 @@ class User extends Authenticatable
 {
     use Notifiable;
 
+    public $timestamps = false;
+    protected $table = 'tbl_users';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -43,4 +46,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(tbl_invoice::class);
     }
+
 }

@@ -13,7 +13,7 @@ class CreateOrderedItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('ordered_items', function (Blueprint $table) {
+        Schema::create('tbl_ordered_items', function (Blueprint $table) {
             $table->integer('invoice_ID');
             $table->integer('menu_ID');
             $table->integer('quantity');
@@ -27,6 +27,6 @@ class CreateOrderedItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ordered_items');
+        Schema::dropIfExists('tbl_ordered_items');
     }
 }

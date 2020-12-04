@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderedItems extends Model
 {
+    protected $table = 'tbl_ordered_items';
+
     public $timestamps = false;
     public function invoices()
     {

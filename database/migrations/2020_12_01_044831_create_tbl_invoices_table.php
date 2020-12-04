@@ -20,6 +20,7 @@ class CreateTblInvoicesTable extends Migration
             $table->date('date');
             $table->time('time');
             $table->double('amount');
+            $table->timestamps();
         });
     }
 

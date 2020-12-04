@@ -15,15 +15,26 @@
       $("#price").val($('#quantity').attr('name'));
     });
   });
+
+  window.addEventListener('scroll',function() {
+    //When scroll change, you save it on localStorage.
+    localStorage.setItem('scrollPosition',window.scrollY);
+},false);
+
+window.addEventListener('load',function() {
+    if(localStorage.getItem('scrollPosition') !== null)
+       window.scrollTo(0, localStorage.getItem('scrollPosition'));
+},false);
 </script>
 
 
-<form method="POST" action="/orderSummary">
+<form method="get" action="/orderSummary">
   {{ csrf_field() }}
-  <div class="float-right" style="position: sticky; top: 0; background-color: rgba(29, 29, 29, 0.657); width: 25%; height: 5em;">
-    <label for="price" style="background-color:none; width: 100%; text-align:center; font-weight:bold; font-size: 20pt; color:white;">Total Order Price</label>
+
+  <div class="float-right" style="position: sticky; top: 0; background-color: rgba(29, 29, 29, 0.657); width: 25%; height: 5em; margin-top:-16px;">
+    <label for="price" style="background-color:none; width: 100%; text-align:center; font-weight:bold; font-size: 20pt; color:white;">Total Order Price: ${{ Session::has('cart') ? number_format(Session::get('cart')->totalPrice,2) : ""}}</label>
     <label type="hidden" id="price" name="price" style=" width: 100%; text-align:center; font-size: 15pt;" value=""></label>
-    <button type="submit" class="btn btn-primary" style="width:100%;">Place Order</button>
+    <button type="submit" class="btn btn-success" style="width:100%;">Place Order</button>
   </div>
   
   <h1 align="center">Order sushi here</h1>
@@ -47,7 +58,7 @@
     <p style="font-size: 15pt;  margin-top:10px " name="price" id="price" value="price">${{ $menuID->price }}</p>
   </td>
   <td style="width:10%" id="pricing">
-    <input type="number" min="0" name="amount[]" id="quantity" size="1" value="0" style="background: none; border-radius: .1em; width: 100%; font-size: 20pt; text-align: center; color: white"></td></tr>
+  <a href="add-to-cart/{{ $menuID->menu_ID }}" role="button" class="btn btn-primary">Add</a>
 @endif
 @endforeach
 </table>

@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class tbl_invoice extends Model
+class Invoices extends Model
 {
     public $timestamps = false;
-    
+    protected $table = 'tbl_invoice';
     protected $fillable = [
-        'pay_ID', 'id', 'date', 'time', 'amount'
+        'pay_ID', 'user_id', 'date', 'time', 'amount'
     ];
 
     public function user()

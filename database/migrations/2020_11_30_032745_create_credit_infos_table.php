@@ -13,14 +13,13 @@ class CreateCreditInfosTable extends Migration
      */
     public function up()
     {
-        Schema::create('credit_infos', function (Blueprint $table) {
-            $table->increments('credit_ID');
-            $table->integer('id');
-            $table->string('type');
+        Schema::create('tbl_credit_info', function (Blueprint $table) {
+            $table->increments('credit_id');
+            $table->integer('user_id');
+            $table->integer('pay_id');
             $table->string('name');
             $table->string('number');
             $table->date('exp_Date');
-            $table->timestamps();
         });
     }
 
@@ -31,6 +30,6 @@ class CreateCreditInfosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('credit_infos');
+        Schema::dropIfExists('tbl_credit_info');
     }
 }

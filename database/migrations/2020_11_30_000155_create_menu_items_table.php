@@ -13,12 +13,11 @@ class CreateMenuItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('menu_items', function (Blueprint $table) {
+        Schema::create('tbl_menu_items', function (Blueprint $table) {
             $table->increments('menu_ID');
             $table->integer('section_ID');
             $table->string('name');
             $table->double('price');
-            $table->timestamps();
         });
     }
 
@@ -29,6 +28,6 @@ class CreateMenuItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menu_items');
+        Schema::dropIfExists('tbl_menu_items');
     }
 }

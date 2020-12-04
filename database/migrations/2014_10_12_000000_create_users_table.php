@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('tbl_users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('email')->unique();           
             $table->string('password');
@@ -22,7 +22,6 @@ class CreateUsersTable extends Migration
             $table->boolean('promotions')->default(1);
             $table->string('userType')->default('C');
             $table->rememberToken();
-            $table->timestamps();
         });
     }
 
@@ -33,6 +32,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('tbl_users');
     }
 }

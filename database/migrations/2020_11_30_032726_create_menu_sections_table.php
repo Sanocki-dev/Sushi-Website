@@ -13,10 +13,9 @@ class CreateMenuSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('menu_sections', function (Blueprint $table) {
+        Schema::create('lk_menu_sections', function (Blueprint $table) {
             $table->increments('section_ID');
             $table->string('name');
-            $table->timestamps();
         });
     }
 
@@ -27,6 +26,6 @@ class CreateMenuSectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('menu_sections');
+        Schema::dropIfExists('lk_menu_sections');
     }
 }
