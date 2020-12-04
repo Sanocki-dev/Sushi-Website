@@ -33,10 +33,11 @@
 
   @include ('layouts.nav')
 
-<p></p>
 <div class="container" style="width: 90%">
   @yield ('content')
 </div>
+
+
 
   @include ('layouts.footer')
 
