@@ -3,6 +3,9 @@
 use App\Model;
 
 Route::get('/', 'MenuController@index')->name('home');
+Route::get('/about', function () {
+    return view('menu.about');
+});
 Route::get('/login', 'SessionsController@create');
 Route::post('/login', 'SessionsController@store');
 Route::get('/logout', 'SessionsController@destroy');
