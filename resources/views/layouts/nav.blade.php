@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 <div class="container">
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light ">
   <a class="navbar-brand" href="{{ url('/') }}">
-      <img class="img-responsive logo" src="{{ asset('/images/SushiBaiKiyoshi.png') }}">
+      <img class="img-responsive logo" src="{{ asset('/images/SushiBaiKiyoshiTextLogo.png') }}">
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -12,14 +12,14 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link nav-text" href="/">Home</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/about">About</a>
       </li>
       <li class="nav-item">
          @if (! Auth::check())
-        <a class="nav-link" href="/about">Menu</a>
+        <a class="nav-link" href="/menu">Menu</a>
          @endif
       </li>
       <li class="nav-item">
@@ -73,7 +73,19 @@
         @endif
       </li>            
       <li class="nav-item">
-        <a class="nav-link" href="#">About</a>
+        @if (Auth::check())   
+        @if (Auth::user()->userType == 'A')
+        <div class="btn-group navSpace float-right">
+          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Reports
+          </button>
+          <div class="dropdown-menu">
+            <a href="/salesReport" class="dropdown-item">Sales Reports</a>
+            <a class="dropdown-item" href="/logout">Logout</a>
+          </div>
+        </div>       
+        @endif
+        @endif
       </li>
     </ul>
   </div>

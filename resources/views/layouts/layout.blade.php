@@ -6,7 +6,6 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v4.1.1">
-    <title>Pricing example · Bootstrap</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/pricing/">
     <script src="https://js.stripe.com/v3/"></script>
@@ -24,6 +23,8 @@
     <meta name="theme-color" content="#563d7c">
 
     <link href="/css/sushi.css" rel="stylesheet">
+
+    <title>Sushi Bai Kiyoshi</title>
   </head>
   <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
