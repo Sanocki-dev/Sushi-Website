@@ -8,8 +8,8 @@ class MenuItems extends Model
 {
     public $timestamps = false;
     protected $table = 'tbl_menu_items';
-    protected $primaryKey = 'menu_ID'; // or null
-    protected $fillable = ['section_ID', 'name', 'price'];
+    protected $primaryKey = 'menu_id'; // or null
+    protected $fillable = ['section_id', 'name', 'price'];
     public function orderedItems()
     {
     	return $this->belongsTo(orderedItems::class);

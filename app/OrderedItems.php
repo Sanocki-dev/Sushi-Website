@@ -7,15 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class OrderedItems extends Model
 {
     protected $table = 'tbl_ordered_items';
-
+    protected $primaryKey = null;
+    public $incrementing = false;
     public $timestamps = false;
-    public function invoices()
+
+    public function invoice()
     {
-    	return $this->belongsTo(Invoice::class);
+    	return $this->belongsTo('App\Invoices', 'invoice_id');
     }
 
-    public function menuItems()
+    public function menuItem()
     {
-    	return $this->belongsTo(MenuItems::class);
+    	return $this->belongsTo('App\MenuItems', 'menu_id');
     }
 }

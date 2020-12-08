@@ -14,7 +14,7 @@ class CreateMenuSectionsTable extends Migration
     public function up()
     {
         Schema::create('lk_menu_sections', function (Blueprint $table) {
-            $table->increments('section_ID');
+            $table->increments('section_id');
             $table->string('name');
         });
     }

@@ -12,7 +12,7 @@ class User extends Authenticatable
 
     public $timestamps = false;
     protected $table = 'tbl_users';
-
+    protected $primaryKey = 'user_id';
     /**
      * The attributes that are mass assignable.
      *
@@ -37,14 +37,14 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function setPromotionsAttribute($value)
-    {
-        $this->attributes['promotions'] = ($value=='on');
-    }
-
     public function invoices()
     {
-        return $this->hasMany(tbl_invoice::class);
+        return $this->hasMany(Invoices::class);
+    }
+
+    public function credit()
+    {
+        return $this->hasOne(CreditInfo::class, 'user_id');
     }
 
 }

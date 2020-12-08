@@ -16,14 +16,13 @@ class RegistrationController extends Controller
     public function store()
     {
     	$this->validate(request(), [
-
     		'email' => 'required|email',
-
-    		'password' => 'required'
-
+    		'password' => 'required',
+			'confirmpassword' => 'required'
+			
     	]);
 
-		$user = User::create(request(['email', 'password', 'name', 'phone', 'promotions']));
+		$user = User::create(request(['email', 'password', 'name', 'phone']));
 
     	auth()->login($user);
 

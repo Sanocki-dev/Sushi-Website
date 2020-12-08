@@ -26,13 +26,15 @@
         </div>
     @endif
 
-    <div class="col-sm-8">
+    <div class="w-75 p-5 text-white" style="margin: auto; background-color:rgba(43, 43, 43, 0.7)">
 
-        <h1>Edit Menu</h1>
+        <h3 class="display-2 text-white">Edit Menu</h3>
+        <hr style="height: 2px; background-color:orange">
 
-        <form method="post">
+        <form method="post" class="p-5">
             {{ csrf_field() }}
-            <div class="form-group">
+            <h3 style="font-weight: lighter">Create Menu Item</h3>
+            <div class="form-group ">
                 <label for="name">Item Name</label>
                 <input type="text" class="form-control" id="name" name="name" value="" required>
             </div>
@@ -41,20 +43,19 @@
                 <label for="Section">Section</label>
                 <select id="section" name="section">
                     @foreach ($sections as $sec)
-                        <option value="{{ $sec->section_ID }}">{{ $sec->name }} </option>
+                        <option value="{{ $sec->section_id }}">{{ $sec->name }} </option>
                     @endforeach
                 </select>
-                <hr>
                 <label for="Price">Price</label>
-                <input type="text" class="form-control" id="price" name="price" aria-describedby="price"
-                    value="" required>
+                <input type="text" class="form-control" id="price" name="price" aria-describedby="price" value="" required>
             </div>
-            <button type="submit" class="btn btn-primary">Create New</button>
+            <button type="submit" class="btn" style=" background-color:orange; color:white">Create New</button>
         </form>
 
-        <hr>
+        <hr style="height: 2px; background-color:orange">
         <!-- Search form -->
-        <div class="container">
+        <div class="w-75 p-5" style="margin: auto">
+            <h3 style="font-weight: lighter">Edit Existing Menu Item</h3>
             <input class="form-control mb-4" id="tableSearch" type="text" placeholder="Type something to search list items">
 
             <table id="Table" class="table">
@@ -65,12 +66,12 @@
                     <th>Options</th>
                 </tr>
                 @foreach ($menu_item as $item)
-                    <tr {{ $flash == $item->menu_ID ? 'class=bg-success' : "$flash" }}>
+                    <tr {{ $flash == $item->menu_id ? 'class=bg-success' : "$flash" }}>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->price }}</td>
-                        <td>{{ $sections[$item->section_ID - 1]->name }}</td>
-                        <td><a href="editMenuItem/{{ $item->menu_ID }}" style="padding-right:10px">Edit</a>
-                            <a href="deleteMenuItem/{{ $item->menu_ID }}">Delete</a>
+                        <td>{{ $sections[$item->section_id - 1]->name }}</td>
+                        <td><a href="editMenuItem/{{ $item->menu_id }}" style="padding-right:10px; color:orange">Edit</a>
+                            <a href="deleteMenuItem/{{ $item->menu_id }}" style="color:orange">Delete</a>
                         </td>
                     </tr>
                 @endforeach
