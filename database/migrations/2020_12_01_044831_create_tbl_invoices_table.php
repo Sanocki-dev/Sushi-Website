@@ -15,14 +15,10 @@ class CreateTblInvoicesTable extends Migration
     {
         Schema::create('tbl_invoice', function (Blueprint $table) {
             $table->increments('invoice_id');
-            $table->integer('pay_id');
             $table->integer('user_id');
-            $table->char('status');
-
-            $table->date('pickup_date');
-            $table->time('pickup_time');
-            
+            $table->integer('order_id');
             $table->double('amount');
+            $table->boolean('paid');
             $table->Timestamp('date');
         });
     }

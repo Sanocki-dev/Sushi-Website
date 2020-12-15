@@ -130,3 +130,52 @@ html, body {
     padding-left: 0;
   }
 }
+
+.home-bg {
+  /* The image used */
+  background-image: url("/images/index/victor-bertels-2dAtqpElQp0-unsplash.jpg");
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.container-marketing-text {
+  color: white;
+}
+
+.padding-top {
+  padding-top: 70px;
+}
+
+/**
+ * The CSS shown here will not be introduced in the Quickstart guide, but shows
+ * how you can use CSS to style your Element's container.
+ */
+ .StripeElement {
+  height: 40px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  background-color: white;
+  -webkit-transition: box-shadow 150ms ease;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;}
+
+#card-errors {
+  color:red;
+}

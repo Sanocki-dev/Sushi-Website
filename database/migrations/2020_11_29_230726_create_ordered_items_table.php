@@ -14,7 +14,7 @@ class CreateOrderedItemsTable extends Migration
     public function up()
     {
         Schema::create('tbl_ordered_items', function (Blueprint $table) {
-            $table->integer('invoice_id');
+            $table->integer('order_id');
             $table->integer('menu_id');
             $table->integer('quantity');
         });

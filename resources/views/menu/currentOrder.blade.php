@@ -23,11 +23,11 @@
 
     </script>
 
-    <div class="w-75" style="margin: auto; background-color:rgba(43, 43, 43, 0.7) " >
-        <form action="/complete/{{ $invoices->invoice_id }}" method="POST">
+<div class="w-75 p-5" style="margin: auto; background-color:rgba(43, 43, 43, 0.7)">
+    <form action="/complete/{{ $currentOrder->order_id }}" method="POST">
             {{ csrf_field() }}
             <div class="row w-100 " style="margin: auto">
-            <div class="col-md order-md-2 mb-4 ">
+            <div class="col-md order-md-2 mb-4">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="display-2 text-white">Order Overview</h3>
                     <hr style="height: 2px; background-color:orange">

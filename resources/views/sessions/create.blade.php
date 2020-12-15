@@ -12,24 +12,24 @@
 
             <div class="form-group">
                 <label for="name">Name</label>
-                <input type="name" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off" required value="Customer">
+                <input type="name" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off" required >
             </div>
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email" autocomplete="off" required value="Customer@test.com">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" autocomplete="off" required >
             </div>
             <div class="form-group">
                 <label for="phone">Phone</label>
-                <input type="phone" class="form-control" id="phone" name="phone" placeholder="Phone" autocomplete="off" required value="9054474758">
+                <input type="phone" class="form-control" id="phone" name="phone" placeholder="Phone" autocomplete="off" required >
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off" required value="Customer">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off" required>
             </div>
             <div class="form-group">
                 <label for="password">Confirm Password</label>
                 <input type="password" class="form-control" id="Confirmpassword" name="confirmpassword" autocomplete="off" placeholder="Password"
-                    required value="Customer">
+                    required>
             </div>
             <button type="submit" class="btn btn-primary mt-4"  style="background-color:orange; border:none; font-weight:bold">Submit</button>
         </form>

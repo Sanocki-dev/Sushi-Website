@@ -19,7 +19,6 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('name');
             $table->string('phone');
-            $table->boolean('promotions')->default(1);
             $table->string('userType')->default('C');
             $table->rememberToken();
         });

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Stripe;
+use DB;
+use Stripe\StripeClient;
 use App\Stats;
 use App\Invoices;
 use App\OrderedItems;
@@ -11,14 +14,34 @@ use App\MenuSection;
 use App\MenuItems;
 use App\Cart;
 use App\User;
-use Session;
 use App\Promotions;
+use App\Order;
 use App\CreditInfo;
+use Cartalyst\Stripe\Api\Orders;
+use Exception;
+use Session;
 
 class MenuController extends Controller
 {
+  
+	public function change()
+  {
+  $user = auth()->user();
+  
+  if ($user->userType == 'A')
+  $user->userType = 'C';
+  else
+  $user->userType = 'A';
+  
+  $user->save();
+    return redirect()->home();
+}
+
+
   public function index()
   {
+    // $menu = MenuItems::all();
+    // dd($menu[0]->menuIngredients->ingredients);
     return view('menu.index');
   }
 
@@ -26,7 +49,7 @@ class MenuController extends Controller
   {
     $menu = MenuItems::all();
     $sections = MenuSection::all();
-    return view('menu.menu', compact('menu','sections'));
+    return view('menu.menu', compact('menu', 'sections'));
   }
 
   public function orderMenu()
@@ -38,8 +61,7 @@ class MenuController extends Controller
     }
     $oldCart = Session::get('cart');
     $cart = new Cart($oldCart);
-    // dd($cart);
-    return view('menu.orderMenu', ['items' => $cart->items, 'totalPrice' => $cart->totalPrice], compact('menuIDS', 'sectionIDS'));
+    return view('menu.orderMenu', ['items' => $cart->items, 'totalSum' => $cart->totalSum], compact('menuIDS', 'sectionIDS'));
   }
 
   public function addToCart(Request $request, $id)
@@ -72,15 +94,14 @@ class MenuController extends Controller
     $cart->delete($item, $item->menu_id);
 
     $request->session()->put('cart', $cart);
-    if ($promo != null)
-    {
+    if ($promo != null) {
       if (!array_key_exists($promo['item'], $cart->items)) {
         session()->forget('promotion');
       }
     }
     return redirect()->route("menu.orderMenu")->with('success', 'Successfully removed item!');
   }
-  
+
   public function removeFromCart(Request $request)
   {
     $item = MenuItems::find($request->id);
@@ -90,11 +111,11 @@ class MenuController extends Controller
     $cart->delete($item, $item->menu_id);
 
     $request->session()->put('cart', $cart);
-    if ($promo != null)
-    {
-    if (!array_key_exists($promo['item'], $cart->items)) {
-      session()->forget('promotion');
-    }}
+    if ($promo != null) {
+      if (!array_key_exists($promo['item'], $cart->items)) {
+        session()->forget('promotion');
+      }
+    }
 
     return redirect()->route("checkout.summary")->with('success', 'Successfully removed item!');
   }
@@ -109,11 +130,10 @@ class MenuController extends Controller
 
     $user = auth()->user()->user_id;
     $promos = Promotions::where('user_id', $user)->get();
-    $credit = CreditInfo::where('user_id', $user)->get();
     $oldCart = Session::get('cart');
     $cart = new Cart($oldCart);
 
-    return view('menu.orderSummary', ['items' => $cart->items, 'totalPrice' => $cart->totalPrice], compact('credit', 'promos'));
+    return view('menu.orderSummary', ['items' => $cart->items, 'totalDue' => $cart->totalDue, 'totalTax' => $cart->totalTax,], compact('promos'));
   }
 
   public function getCheckout()
@@ -123,74 +143,73 @@ class MenuController extends Controller
     }
     $oldCart = Session::get('cart');
     $cart = new Cart($oldCart);
-    $total = $cart->totalPrice;
+
+    $total = $cart->totalSum;
     return view('menu.checkout', compact('total'));
   }
 
-  public function postCheckout()
+  public function postCheckout(Request $request)
   {
-    if (!Session::has('cart')) {
-      return view('menu.orderSummary');
-    }
-    $user = auth()->user()->user_id;
+    $promo = 0;
 
-    $credit = CreditInfo::where('user_id', $user)->first();
-    // dd(request('saveCard'));
-    if (request('saveCard') == 1) {
-      if ($credit == null) {
-        $card = new CreditInfo;
-        $card->user_id = $user;
-        $card->pay_id = request('paymentMethod');
-        $card->name = request('cc-name');
-        $card->number = request('cc-number');
-        $card->exp_Date = \Carbon\Carbon::parse(request('cc-expiration'))->endOfMonth()->toDateString();
-        $card->save();
-      } else {
-        $credit->pay_id = request('paymentMethod');
-        $credit->name = request('cc-name');
-        $credit->number = request('cc-number');
-        $credit->exp_Date = \Carbon\Carbon::parse(request('cc-expiration'))->endOfMonth()->toDateString();
-        $credit->save();
-      }
+    if (session()->has('promotion')) {
+      $promo = session()->get('promotion')['item_discount'];
+    }
+
+    try {
+      $user = auth()->user();
+      $oldCart = Session::get('cart');
+      $cart = new Cart($oldCart);
+      $total = number_format($cart->totalDue - $promo, 2);
+
+      $charge = Stripe::charges()->create([
+        'amount' => $total,
+        'currency' => 'CAD',
+        'source' => $request->stripeToken,
+        'description' => 'Order',
+        'receipt_email' => $user->email,
+      ]);
+    } catch (Exception $ex) {
+      return back()->with('errors', $ex->getMessage());
     }
 
     $oldCart = Session::get('cart');
     $cart = new Cart($oldCart);
-    $total = number_format($cart->totalPrice, 2);
 
-    $invoice = new Invoices;
-    $invoice->pay_id = request('paymentMethod');
-    $invoice->user_id = $user;
-    $invoice->status = 'R';
-    $invoice->pickup_date = \Carbon\Carbon::parse(request('date'))->toDateString();
-    $invoice->pickup_time = \Carbon\Carbon::parse(request('time'))->toTimeString();
-    $invoice->amount = $total;
+    // Create order
+    $order = new Order;
+    $order->pickup_date = \Carbon\Carbon::parse(request('date'))->toDateString();
+    $order->pickup_time = \Carbon\Carbon::parse(request('time'))->toTimeString();
+    $order->status = 'R';
+    $order->save();
 
-    $invoice->save();
-
-    $invoice = Invoices::select('invoice_id')->orderBy('invoice_id', 'desc')->first()->invoice_id;
-
+    // Create ordered items 
     foreach ($cart->items as $item) {
-      $order = new OrderedItems;
-      $order->invoice_id = $invoice;
-      $order->menu_id = $item['item']->menu_id;
-      $order->quantity = $item['qty'];
-      $order->save();
+      $ordered = new OrderedItems;
+      $ordered->order_id = $order->order_id;
+      $ordered->menu_id = $item['item']->menu_id;
+      $ordered->quantity = $item['qty'];
+      $ordered->save();
     }
 
-    session()->flash('success', "Your order has been placed!");
+    // Create invoice for order
+    $invoice = new Invoices;
+    $invoice->user_id = $user->user_id;
+    $invoice->order_id = $order->order_id;
+    $invoice->amount = $total;
+    $invoice->save();
+
     session()->put('cart', null);
-    return redirect()->route('home');
+    // Successful purchase
+    return redirect()->route("order.status")->with('success', 'Your order has been placed!');
   }
 
   public function history()
   {
     $user = auth()->user()->user_id;
-    $history = OrderedItems::all();
-    $menu = MenuItems::all();
     $invoices = Invoices::where('user_id', $user)->get();
-
-    return view('menu.history', compact('invoices', 'history', 'menu'));
+    // dd($invoices[0]->invoiceOrder->orderItems[0]->menuItem);
+    return view('menu.history', compact('invoices'));
   }
 
   public function show()
@@ -210,28 +229,7 @@ class MenuController extends Controller
     $update = User::where('user_id', $user)->first();
     $update->name = request('name');
     $update->phone = request('phone');
-    $update->promotions = request('promotions');
     $update->save();
-
-    $credit = CreditInfo::where('user_id', $user)->first();
-    // dd(request('saveCard'));
-    if (request('saveCard') == 1) {
-      if ($credit == null) {
-        $card = new CreditInfo;
-        $card->user_id = $user;
-        $card->pay_id = request('paymentMethod');
-        $card->name = request('cc-name');
-        $card->number = request('cc-number');
-        $card->exp_Date = \Carbon\Carbon::parse(request('cc-expiration'))->endOfMonth()->toDateString();
-        $card->save();
-      } else {
-        $credit->pay_id = request('paymentMethod');
-        $credit->name = request('cc-name');
-        $credit->number = request('cc-number');
-        $credit->exp_Date = \Carbon\Carbon::parse(request('cc-expiration'))->endOfMonth()->toDateString();
-        $credit->save();
-      }
-    }
 
     return redirect()->home();
   }
@@ -324,28 +322,33 @@ class MenuController extends Controller
 
   public function currentOrders()
   {
+    $orders = Order::where('status', '<>', 'C')->get()->sortBy('pickup_date');
+    $ordered = OrderedItems::all();
     $invoices = Invoices::all();
-    $orders = OrderedItems::all();
+    // dd($orders[0]->orderInvoice);
 
-    return view('menu.currentOrders', compact('invoices', 'orders'));
+    return view('menu.currentOrders', compact('orders', 'ordered', 'invoices'));
   }
 
   public function currentOrder($id)
   {
-    $invoices = Invoices::find($id);
-    if ($invoices->status != 'C')
-      $invoices->status = 'O';
-    $invoices->save();
+    $currentOrder = Order::find($id);
+    if ($currentOrder->status != 'C')
+      $currentOrder->status = 'O';
+    $currentOrder->save();
+
     $menu = MenuItems::all();
-    $orders = OrderedItems::where('invoice_id', $id)->get();
+    $orders = OrderedItems::where('order_id', $id)->get();
+
     $customerStats = new Stats();
-    $customer = Invoices::where('user_id', $invoices->user_id)->get();
-
+    $customer = Invoices::where('user_id', $currentOrder->orderInvoice->user_id)->get();
+    
     $percent = 0;
+    
     $invoiceCount = count($customer);
-
+    
     foreach ($customer as $order) {
-      $items = $order->orderedItems;
+      $items = $order->invoiceOrder->orderItems;
       foreach ($items as $item) {
         $customerStats->add($item->menu_id);
         $percent = $customerStats->item_id[$item->menu_id]['timesOrdered'] / $invoiceCount;
@@ -356,40 +359,91 @@ class MenuController extends Controller
 
     $customerStats = $customerStats->item_id;
     $customerStats = collect($customerStats)->sortBy('percent')->reverse()->toArray();
-    // dd($invoices);
-    return view('menu.currentOrder', compact('invoices', 'orders', 'customerStats', 'menu'));
+    return view('menu.currentOrder', compact('currentOrder', 'orders', 'customerStats', 'menu'));
   }
 
   public function finishOrder($id)
   {
-    $invoice = Invoices::find($id);
-    $invoice->status = 'C';
-    $invoice->save();
+    $order = Order::find($id);
+    if ($order->status != 'P')
+    $order->status = 'C';
+    $order->save();
+    // dd($order->status);
+
     if (request('startdate') != null && request('enddate') != null && request('Discount') != null && request('promos') != null) {
       $itemPromos = request('promos');
       foreach ($itemPromos as $item) {
         $promo = new Promotions;
-        $promo->user_id = $invoice->user_id;
+        $promo->user_id = $order->orderInvoice->user_id;
         $promo->menu_id = $item;
         $promo->start_date = request('startdate');
         $promo->end_date = request('enddate');
         $promo->discount = request('Discount');
-        $promo->code = str_random(5);
+        // $promo->code = str_random(5);
         $promo->save();
       }
     }
-
-
+    
     $invoices = Invoices::all();
     $orders = OrderedItems::all();
+  
     return redirect()->route('currentOrders', compact('invoices', 'orders'));
   }
 
+  public function completeTransaction($id)
+  {
+    $order = Order::find($id);
+    $order->status = 'P';
+    $order->orderInvoice->paid = 1;
+    $order->save();
+    
+    return redirect()->back();
+  }
+
+ public function pickup()
+ {
+  $orders = Order::where('status', '=', 'C')->get()->sortBy('pickup_time');
+  $ordered = OrderedItems::all();
+  $invoices = Invoices::all();
+  return view('menu.pickup', compact('orders', 'ordered', 'invoices'));
+ }
+
   public function salesReport()
   {
-    $invoices = Invoices::where('status', 'C')->get();
-    $orders = OrderedItems::all();
-    return view('menu.salesReport', compact('invoices', 'orders'));
+    $orders = Order::all();
+    $items = MenuItems::all();
+
+    return view('reports.salesReport', compact('orders', 'items'));
+  }
+
+  public function menuReport()
+  {
+    $orders = Order::all();
+    $items = MenuItems::all();
+
+    $byMonths = DB::table('tbl_orders')
+            ->join('tbl_ordered_items', 'tbl_orders.order_id', '=', 'tbl_ordered_items.order_id')
+            ->join('tbl_menu_items', 'tbl_menu_items.menu_id', '=', 'tbl_ordered_items.menu_id')
+            ->select('tbl_orders.pickup_date','tbl_ordered_items.menu_id','tbl_menu_items.name', DB::raw('COUNT(tbl_ordered_items.menu_id) count'))
+            ->groupBy(DB::raw('YEAR(tbl_orders.pickup_date), MONTH(tbl_orders.pickup_date), tbl_ordered_items.menu_id'))
+            ->get();
+
+    return view('reports.menuItemReport', compact('orders', 'items', 'byMonths'));
+  }
+
+  public function ingredientReport(Type $var = null)
+  {
+    $orders = Order::all();
+    $items = MenuItems::all();
+
+    $byMonths = DB::table('tbl_orders')
+          ->join('tbl_ordered_items', 'tbl_orders.order_id', '=', 'tbl_ordered_items.order_id')
+          ->join('tbl_menu_items', 'tbl_menu_items.menu_id', '=', 'tbl_ordered_items.menu_id')
+          ->select('tbl_orders.pickup_date','tbl_ordered_items.menu_id','tbl_menu_items.name', DB::raw('COUNT(tbl_ordered_items.menu_id) count'))
+          ->groupBy(DB::raw('YEAR(tbl_orders.pickup_date), MONTH(tbl_orders.pickup_date), tbl_ordered_items.menu_id'))
+          ->get();
+
+          return view('reports.ingredientReport', compact('orders', 'items', 'byMonths'));
   }
 
   public function orderPayment()

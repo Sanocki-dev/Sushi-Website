@@ -10,7 +10,7 @@ class Invoices extends Model
     protected $primaryKey = 'invoice_id';
     public $timestamps = false;
     protected $fillable = [
-        'pay_id', 'user_id', 'date', 'time', 'amount', 'status'
+       'user_id', 'amount'
     ];
     
     public function user()
@@ -18,9 +18,14 @@ class Invoices extends Model
     	return $this->belongsTo('App\User','user_id');
     } 
 
-    public function orderedItems()
+    public function invoiceOrder()
     {
-    	return $this->hasMany(OrderedItems::class, 'invoice_id');
+    	return $this->belongsTo('App\Order', 'order_id');
+    }
+
+    public function invoicesOrder()
+    {
+    	return $this->hasOne('App\Order', 'order_id');
     }
 
     public function menuItems()

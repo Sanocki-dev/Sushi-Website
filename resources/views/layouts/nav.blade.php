@@ -8,6 +8,10 @@
 </div>
 <div class="navbar navbar-inverse bg-inverse">
     <div class="float-left">
+        <img class="img-responsive logo" style="height: 50px; width:50px;"
+            src="{{ asset('/images/SushiBaiKiyoshiLogo.png') }}">
+        <img class="img-responsive logo" style="height: 25px; width:250px; filter:invert()"
+            src="{{ asset('/images/SushiBaiKiyoshiTextLogo.png') }}">
         <a class="navSpace"></a>
         <img src="" alt="">
         <a href="/" class="navbar-brand navSpace">Home</a>
@@ -24,7 +28,7 @@
             @if (Auth::user()->userType == 'C')
                 <a href="/orderMenu" class="navbar-brand navSpace">Order Now</a>
                 <a href="/orderStatus" class="navbar-brand navSpaceTwo">Order Status</a>
-                <div class="btn-group navSpace float-right">
+                <div class="btn-group navSpace float-right p-2">
                     <button type="button" class="btn dropdown-toggle font-weight-bold"
                         style="background: none; color:white" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
@@ -34,6 +38,7 @@
                         <a class="dropdown-item" href="/history">History</a>
                         <a class="dropdown-item" href="/account">Account Information</a>
                         <a class="dropdown-item" href="/logout">Logout</a>
+                        <a href="/admin" class="dropdown-item">Admin</a>
                     </div>
                 </div>
             @endif
@@ -41,15 +46,23 @@
 
         @if (Auth::check())
             @if (Auth::user()->userType == 'A')
-                <a href="/editMenu" class="navbar-brand navSpace">Edit Order Menu</a>
-                <a href="/currentOrders" class="navbar-brand navSpaceTwo">Current Orders</a>
-                <div class="btn-group navSpace float-right">
+                <a href="/suppliers" class="navbar-brand navSpace">Suppliers</a>
+                <a href="/ingredients" class="navbar-brand navSpaceTwo">Ingredients</a>
+                <div class="btn-group navSpace float-right p-2">
                     <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
                         aria-haspopup="true" aria-expanded="false" style="background: none; color:white; border:none">
                         Welcome Back <span style="color: orange">{{ Auth::user()->name }}</span>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="/salesReport" class="dropdown-item">Sales Reports</a>
+                        <a href="/salesReport" class="dropdown-item">Sales Report</a>
+                        <a href="/menuItemReport" class="dropdown-item">Menu Report</a>
+                        <a href="/ingredientReport" class="dropdown-item">Ingredient Report</a>
+                        <a href="/admin" class="dropdown-item">Customer</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/editMenu" class="dropdown-item">Edit Order Menu</a>
+                        <a href="/currentOrders" class="dropdown-item">Current Orders</a>
+                        <a href="/pickup" class="dropdown-item">Current Pickups</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/logout">Logout</a>
                     </div>
                 </div>

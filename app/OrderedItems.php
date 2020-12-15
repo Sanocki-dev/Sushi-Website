@@ -13,7 +13,7 @@ class OrderedItems extends Model
 
     public function invoice()
     {
-    	return $this->belongsTo('App\Invoices', 'invoice_id');
+    	return $this->belongsTo('App\Invoices', 'order_id');
     }
 
     public function menuItem()

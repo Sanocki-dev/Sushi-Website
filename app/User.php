@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable
 {
     use Notifiable;
-
+    
     public $timestamps = false;
     protected $table = 'tbl_users';
     protected $primaryKey = 'user_id';
@@ -46,5 +46,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(CreditInfo::class, 'user_id');
     }
-
 }
