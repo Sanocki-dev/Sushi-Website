@@ -23,19 +23,19 @@ use Session;
 
 class MenuController extends Controller
 {
-  
-	public function change()
+
+  public function change()
   {
-  $user = auth()->user();
-  
-  if ($user->userType == 'A')
-  $user->userType = 'C';
-  else
-  $user->userType = 'A';
-  
-  $user->save();
+    $user = auth()->user();
+
+    if ($user->userType == 'A')
+      $user->userType = 'C';
+    else
+      $user->userType = 'A';
+
+    $user->save();
     return redirect()->home();
-}
+  }
 
 
   public function index()
@@ -151,26 +151,29 @@ class MenuController extends Controller
   public function postCheckout(Request $request)
   {
     $promo = 0;
+    $user = auth()->user();
+    $oldCart = Session::get('cart');
+    $cart = new Cart($oldCart);
+    $total = number_format($cart->totalDue - $promo, 2);
+    $type = 0;
 
     if (session()->has('promotion')) {
       $promo = session()->get('promotion')['item_discount'];
     }
-
-    try {
-      $user = auth()->user();
-      $oldCart = Session::get('cart');
-      $cart = new Cart($oldCart);
-      $total = number_format($cart->totalDue - $promo, 2);
-
-      $charge = Stripe::charges()->create([
-        'amount' => $total,
-        'currency' => 'CAD',
-        'source' => $request->stripeToken,
-        'description' => 'Order',
-        'receipt_email' => $user->email,
-      ]);
-    } catch (Exception $ex) {
-      return back()->with('errors', $ex->getMessage());
+    // dd(request('purchase'));
+    if (request('purchase') == null) {
+      try {
+        $type = 1;
+        $charge = Stripe::charges()->create([
+          'amount' => $total,
+          'currency' => 'CAD',
+          'source' => $request->stripeToken,
+          'description' => 'Order',
+          'receipt_email' => $user->email,
+        ]);
+      } catch (Exception $ex) {
+        return back()->with('errors', $ex->getMessage());
+      }
     }
 
     $oldCart = Session::get('cart');
@@ -197,8 +200,8 @@ class MenuController extends Controller
     $invoice->user_id = $user->user_id;
     $invoice->order_id = $order->order_id;
     $invoice->amount = $total;
+    $invoice->paid = $type;
     $invoice->save();
-
     session()->put('cart', null);
     // Successful purchase
     return redirect()->route("order.status")->with('success', 'Your order has been placed!');
@@ -342,11 +345,11 @@ class MenuController extends Controller
 
     $customerStats = new Stats();
     $customer = Invoices::where('user_id', $currentOrder->orderInvoice->user_id)->get();
-    
+
     $percent = 0;
-    
+
     $invoiceCount = count($customer);
-    
+
     foreach ($customer as $order) {
       $items = $order->invoiceOrder->orderItems;
       foreach ($items as $item) {
@@ -366,7 +369,7 @@ class MenuController extends Controller
   {
     $order = Order::find($id);
     if ($order->status != 'P')
-    $order->status = 'C';
+      $order->status = 'C';
     $order->save();
     // dd($order->status);
 
@@ -383,10 +386,10 @@ class MenuController extends Controller
         $promo->save();
       }
     }
-    
+
     $invoices = Invoices::all();
     $orders = OrderedItems::all();
-  
+
     return redirect()->route('currentOrders', compact('invoices', 'orders'));
   }
 
@@ -396,17 +399,17 @@ class MenuController extends Controller
     $order->status = 'P';
     $order->orderInvoice->paid = 1;
     $order->save();
-    
+
     return redirect()->back();
   }
 
- public function pickup()
- {
-  $orders = Order::where('status', '=', 'C')->get()->sortBy('pickup_time');
-  $ordered = OrderedItems::all();
-  $invoices = Invoices::all();
-  return view('menu.pickup', compact('orders', 'ordered', 'invoices'));
- }
+  public function pickup()
+  {
+    $orders = Order::where('status', '=', 'C')->get()->sortBy('pickup_time');
+    $ordered = OrderedItems::all();
+    $invoices = Invoices::all();
+    return view('menu.pickup', compact('orders', 'ordered', 'invoices'));
+  }
 
   public function salesReport()
   {
@@ -422,11 +425,11 @@ class MenuController extends Controller
     $items = MenuItems::all();
 
     $byMonths = DB::table('tbl_orders')
-            ->join('tbl_ordered_items', 'tbl_orders.order_id', '=', 'tbl_ordered_items.order_id')
-            ->join('tbl_menu_items', 'tbl_menu_items.menu_id', '=', 'tbl_ordered_items.menu_id')
-            ->select('tbl_orders.pickup_date','tbl_ordered_items.menu_id','tbl_menu_items.name', DB::raw('COUNT(tbl_ordered_items.menu_id) count'))
-            ->groupBy(DB::raw('YEAR(tbl_orders.pickup_date), MONTH(tbl_orders.pickup_date), tbl_ordered_items.menu_id'))
-            ->get();
+      ->join('tbl_ordered_items', 'tbl_orders.order_id', '=', 'tbl_ordered_items.order_id')
+      ->join('tbl_menu_items', 'tbl_menu_items.menu_id', '=', 'tbl_ordered_items.menu_id')
+      ->select('tbl_orders.pickup_date', 'tbl_ordered_items.menu_id', 'tbl_menu_items.name', DB::raw('COUNT(tbl_ordered_items.menu_id) count'))
+      ->groupBy(DB::raw('YEAR(tbl_orders.pickup_date), MONTH(tbl_orders.pickup_date), tbl_ordered_items.menu_id'))
+      ->get();
 
     return view('reports.menuItemReport', compact('orders', 'items', 'byMonths'));
   }
@@ -437,13 +440,13 @@ class MenuController extends Controller
     $items = MenuItems::all();
 
     $byMonths = DB::table('tbl_orders')
-          ->join('tbl_ordered_items', 'tbl_orders.order_id', '=', 'tbl_ordered_items.order_id')
-          ->join('tbl_menu_items', 'tbl_menu_items.menu_id', '=', 'tbl_ordered_items.menu_id')
-          ->select('tbl_orders.pickup_date','tbl_ordered_items.menu_id','tbl_menu_items.name', DB::raw('COUNT(tbl_ordered_items.menu_id) count'))
-          ->groupBy(DB::raw('YEAR(tbl_orders.pickup_date), MONTH(tbl_orders.pickup_date), tbl_ordered_items.menu_id'))
-          ->get();
+      ->join('tbl_ordered_items', 'tbl_orders.order_id', '=', 'tbl_ordered_items.order_id')
+      ->join('tbl_menu_items', 'tbl_menu_items.menu_id', '=', 'tbl_ordered_items.menu_id')
+      ->select('tbl_orders.pickup_date', 'tbl_ordered_items.menu_id', 'tbl_menu_items.name', DB::raw('COUNT(tbl_ordered_items.menu_id) count'))
+      ->groupBy(DB::raw('YEAR(tbl_orders.pickup_date), MONTH(tbl_orders.pickup_date), tbl_ordered_items.menu_id'))
+      ->get();
 
-          return view('reports.ingredientReport', compact('orders', 'items', 'byMonths'));
+    return view('reports.ingredientReport', compact('orders', 'items', 'byMonths'));
   }
 
   public function orderPayment()
