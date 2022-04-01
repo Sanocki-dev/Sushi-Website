@@ -7,13 +7,24 @@
 
     <div id="SalesReport" class="col" style="background-color:white;">
 
-        @if ($flash = session('success'))
-            <div id="flash-message" class="alert alert-success" role="alert">
-                {{ $flash }}
-            </div>
-        @endif
         <h3 class="display-2">Suppliers</h3>
         <hr style="height: 2px; background-color:orange">
+        @if (session()->has('success'))
+        <div class="spacer">
+            <div class="alert alert-success">
+                {{ session()->get('success') }}
+            </div>
+        </div>
+    @endif
+    @if (count($errors) > 0)
+        <div class="spacer">
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <strong>{{ $error }}</strong><br>
+                @endforeach
+            </div>
+        </div>
+    @endif
         <div class="w-50 p-5">
             <h3 class="display-4">New Supplier</h3>
             <form action="{{ route('supplier.store') }}" method="POST">
@@ -73,7 +84,7 @@
                         <tr class="data">
                             <td><a href="supplier/{{ $supplier->supplier_id }}">{{ $supplier->name }}</a>
                             </td>
-                            <td>{{ $supplier->supplier_id }}</td>
+                            <td>{{ $supplier->address }}</td>
                             <td>{{ $supplier->phone }}</td>
                             </td>
                             <td>{{ $supplier->email }}

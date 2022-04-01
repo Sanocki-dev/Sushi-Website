@@ -31,12 +31,6 @@
                         </tr>
                     @endforeach
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="2">Total</th>
-                        <th id="total"></th>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>

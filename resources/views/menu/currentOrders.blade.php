@@ -42,49 +42,50 @@
                     </tr>
                 </thead>
                 <tbody>
-
-
                     @foreach ($orders as $order)
-                        @if (!($order->status == 'C' || $order->status == 'P'))
-                            @php
-                            $userOrder = $order->orderInvoice->user_id;
-                            $Count = $invoices->where('user_id', $userOrder)->count()
-                            @endphp
+                        @if ($order != null)
+                            @if (!($order->status == 'C' || $order->status == 'P'))
+                                @php
+                                $userOrder = $order->orderInvoice->user_id;
+                                $Count = $invoices->where('user_id', $userOrder)->count()
+                                @endphp
 
-                            <tr>
-                                <td><a
-                                        href="currentOrder/{{ $order->order_id }}">{{ str_pad($order->order_id, 5, '0', STR_PAD_LEFT) }}</a>
-                                </td>
-                                <td>{{ $order->orderInvoice->user->name }}</td>
-                                @if ($Count == 1)
-                                    <td class="text-success font-weight-bold">***
-                                    @elseif ($Count % 5 == 0)
-                                    <td class="text-danger font-weight-bold">**
+                                <tr>
+                                    <td><a
+                                            href="currentOrder/{{ $order->order_id }}">{{ str_pad($order->order_id, 5, '0', STR_PAD_LEFT) }}</a>
+                                    </td>
+                                    <td>{{ $order->orderInvoice->user->name }}</td>
+                                    @if ($Count == 1)
+                                        <td class="text-success font-weight-bold">***
+                                        @elseif ($Count % 5 == 0)
+                                        <td class="text-danger font-weight-bold">**
+                                        @else
+                                        <td class=".text-default font-weight-bold">
+                                    @endif
+
+                                    {{ $Count }}</td>
+
+                                    <td>{{ \Carbon\Carbon::createFromFormat('H:i:s', $order->pickup_time)->format('H:i') }}
+                                    </td>
+                                    <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $order->pickup_date)->format('M jS') }}
+                                    </td>
+
+                                    @if ($order->orderInvoice->paid)
+                                        <td class="text-success">PAID</td>
                                     @else
-                                    <td class=".text-default font-weight-bold">
-                                @endif
+                                        <td class="text-danger">NOT-PAID</td>
+                                    @endif
 
-                                {{ $Count }}</td>
-
-                                <td>{{ \Carbon\Carbon::createFromFormat('H:i:s', $order->pickup_time)->format('H:i') }}</td>
-                                <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $order->pickup_date)->format('M jS') }}
-                                </td>
-
-                                @if ($order->orderInvoice->paid)
-                                    <td class="text-success">PAID</td>
-                                @else
-                                    <td class="text-danger">NOT-PAID</td>
-                                @endif
-
-                                @php $status = $order->status @endphp
-                                @if ($status == 'R')
-                                    <td class="text-danger">RECIEVED</td>
-                                @elseif ($status == 'O')
-                                    <td class="text-primary">OPENED</td>
-                                @else
-                                    <td class="text-success">READY FOR PICK-UP</td>
-                                @endif
-                            </tr>
+                                    @php $status = $order->status @endphp
+                                    @if ($status == 'R')
+                                        <td class="text-danger">RECIEVED</td>
+                                    @elseif ($status == 'O')
+                                        <td class="text-primary">OPENED</td>
+                                    @else
+                                        <td class="text-success">READY FOR PICK-UP</td>
+                                    @endif
+                                </tr>
+                            @endif
                         @endif
                     @endforeach
 

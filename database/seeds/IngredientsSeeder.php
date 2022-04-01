@@ -12,15 +12,6 @@ class IngredientsSeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i <= 200; $i++)
-        {
-            $faker = Faker\Factory::create();
-
-            DB::table('tbl_ingredients')->insert([
-                'name' => $faker->unique->word,
-                ]);
-        }
-
         for ($i = 0; $i <= 100; $i++)
         {
             $faker = Faker\Factory::create();

@@ -11,7 +11,7 @@ class OrderedItemsSeeder extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i <= 300; $i++)
+        for ($i = 0; $i <= 100; $i++)
         {
             $faker = Faker\Factory::create();
             DB::table('tbl_ordered_items')->insert([

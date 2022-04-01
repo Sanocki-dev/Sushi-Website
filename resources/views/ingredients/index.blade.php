@@ -9,19 +9,19 @@
         <h3 class="display-2">Ingredients</h3>
         <hr style="height: 2px; background-color:orange">
         <div class="p-5">
-            <h3 class="display-4">New Details</h3>
+            <h3 class="display-4">New Supplier Ingredient</h3>
             <form action="/ingredients" method="POST" class="mb-5">
                 {{ csrf_field() }}
                 <div class="row">
-                    <div class="col-md-2 mb-2">
-                        <label for="cc-number">Supplier</label>
+                    <div class="col-md-2 m-2">
+                        <label for="cc-number">Supplier</label><br>
                         <select name="suppliers" id="supplier" class="p-2">
                             @foreach ($suppliers as $supplier)
                                 <option value="{{ $supplier->supplier_id }}">{{ $supplier->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-1 mb-2">
+                    <div class="col-md-1 m-2">
                         <label for="cc-number">Ingredient</label><br>
                         <select name="ingredients" id="ingredient" class="p-2">
                             @foreach ($allIngredients as $ingredient)
@@ -29,16 +29,16 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2 mb-2">
+                    <div class="col-md-1 m-2">
                         <label for="cc-number">Price</label>
                         <input type="text" class="form-control" id="Price" name="Price" placeholder="Price" required>
                     </div>
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-4 m-2">
                         <label for="cc-number">Details</label>
                         <input type="text" class="form-control" id="Details" name="Details" placeholder="Details" >
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary "
+                <button type="submit" class="btn btn-primary m-2"
                     style="background-color:orange; border:none; font-weight:bold">Submit</button>
             </form>
 

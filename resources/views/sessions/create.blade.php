@@ -1,15 +1,12 @@
 @extends ('layouts.layout')
 
 @section('content')
-
-    <div class="w-50 mt-5  p-5" style="margin: auto;color:white; background-color:rgba(56, 56, 56, 0.651)">
-
+    <div class="w-50 mt-5 p-5" style="margin: auto;color:white; background-color:rgba(43, 43, 43, 0.7)">
         <h1 class="display-2">Sign Up</h1>
         <hr style="height: 2px; background-color:orange">
+        @include('layouts.errors')
         <form method=POST action="/register" autocomplete="off">
-
             {{ csrf_field() }}
-
             <div class="form-group">
                 <label for="name">Name</label>
                 <input type="name" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off" required >
@@ -28,11 +25,12 @@
             </div>
             <div class="form-group">
                 <label for="password">Confirm Password</label>
-                <input type="password" class="form-control" id="Confirmpassword" name="confirmpassword" autocomplete="off" placeholder="Password"
+                <input type="password" class="form-control" id="Confirmpassword" name="password_confirmation" autocomplete="off" placeholder="Password"
                     required>
             </div>
             <button type="submit" class="btn btn-primary mt-4"  style="background-color:orange; border:none; font-weight:bold">Submit</button>
         </form>
+
     </div>
 
 @endsection

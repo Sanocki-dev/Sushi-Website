@@ -1,7 +1,7 @@
 @extends ('layouts.layout')
 
 @section('content')
-    <div class="w-75 p-5" style="margin:auto; color:white; background-color:rgba(56, 56, 56, 0.651)">
+    <div class="w-50 p-5" style="margin:auto; color:white; background-color:rgba(43, 43, 43, 0.7)">
       <h1 class="display-2">Change Account Information</h1>
         <hr style="height: 2px; background-color:orange">
         <h4 class="mb-3" style="color:orange">Account Details</h4>

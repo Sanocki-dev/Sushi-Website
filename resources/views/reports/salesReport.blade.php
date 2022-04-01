@@ -27,9 +27,7 @@
                     </thead>
                     <tbody>
                         @foreach ($orders as $order)
-                            @php
-                            // $Count = $orders[0]->invoice::where('user_id',$invoice->user_id)->count();
-                            @endphp
+                            @if ($order != null)
                             <tr class="data">
                                 <td><a
                                         href="currentOrder/{{ $order->order_id }}">{{ str_pad($order->order_id, 5, '0', STR_PAD_LEFT) }}</a>
@@ -40,8 +38,8 @@
                                 <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d', $order->pickup_date)->format('d M Y') }}
                                 </td>
                                 <td>{{ number_format($order->orderInvoice->amount, 2) }}</td>
-
                             </tr>
+                            @endif
                         @endforeach
                     </tbody>
                     <tfoot>

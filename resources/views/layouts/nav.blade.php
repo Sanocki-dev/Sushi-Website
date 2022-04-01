@@ -29,7 +29,7 @@
                 <a href="/orderMenu" class="navbar-brand navSpace">Order Now</a>
                 <a href="/orderStatus" class="navbar-brand navSpaceTwo">Order Status</a>
                 <div class="btn-group navSpace float-right p-2">
-                    <button type="button" class="btn dropdown-toggle font-weight-bold"
+                    <button type="button" class="btn btn-success dropdown-toggle"
                         style="background: none; color:white" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
                         Welcome Back <span style="color: orange">{{ Auth::user()->name }}</span>
@@ -37,6 +37,7 @@
                     <div class="dropdown-menu w-100">
                         <a class="dropdown-item" href="/history">History</a>
                         <a class="dropdown-item" href="/account">Account Information</a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/logout">Logout</a>
                         <a href="/admin" class="dropdown-item">Admin</a>
                     </div>

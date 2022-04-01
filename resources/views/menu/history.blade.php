@@ -2,7 +2,7 @@
 
 @section ('content')
 
-<div class="col-sm-8 text-white w-75 p-5" style="margin: auto; background-color:rgba(56, 56, 56, 0.651)">
+<div class="col-sm-8 text-white w-75 p-5" style="margin: auto; background-color:rgba(43, 43, 43, 0.7)">
 
 	<h1 class="display-2 ">Order History</h1>
 

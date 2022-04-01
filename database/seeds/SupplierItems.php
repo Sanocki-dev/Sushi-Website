@@ -11,14 +11,14 @@ class SupplierItems extends Seeder
      */
     public function run()
     {
-        for ($i = 0; $i <= 200; $i++)
+        for ($i = 0; $i <= 30; $i++)
         {
             $faker = Faker\Factory::create();
 
-            DB::table('tbl_suppliers')->insert([
-                'supplier_id' => $faker->numberBetween(1, 110),
-                'ingredient_id' => $faker->numberBetween(1, 51),
-                'price' => $faker->price(),
+            DB::table('tbl_supplier_items')->insert([
+                'supplier_id' => $faker->numberBetween(1, 11),
+                'ingredient_id' => $faker->numberBetween(1, 34),
+                'price' => $faker->numberBetween(5.00, 35.00)+'.00',
             ]);
         }
     }

@@ -24,6 +24,7 @@
     </script>
 
 <div class="w-75 p-5" style="margin: auto; background-color:rgba(43, 43, 43, 0.7)">
+    <a href="javascript:history.back()" class="btn btn-primary float-right" style="background-color:orange; border:none;">Back</a>
     <form action="/complete/{{ $currentOrder->order_id }}" method="POST">
             {{ csrf_field() }}
             <div class="row w-100 " style="margin: auto">
@@ -32,6 +33,8 @@
                     <h3 class="display-2 text-white">Order Overview</h3>
                     <hr style="height: 2px; background-color:orange">
                 </h4>
+
+
                     <ul class="list-group mb-3">
                         @foreach ($orders as $item)
                             <li class="list-group-item d-flex justify-content-between lh-condensed" value="0"
@@ -44,7 +47,7 @@
                     </ul>
                 </div>
             </div>
-            <button type="button" class="btn w-100 mb-3" style="background-color:orange; color:white" onclick="myFunction()">Customer Info & Promotions</button>
+            <button type="button" class="btn w-100 mb-3" style="background-color:rgba(43, 43, 43, 0.7); border:1px solid white; color:white" onclick="myFunction()">Customer Info & Promotions</button>
             <div style="display: none" id="cusomterStats" class="container w-100">
                 <div class="row">
                     <div class="col">

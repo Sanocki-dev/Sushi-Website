@@ -17,8 +17,10 @@ use App\User;
 use App\Promotions;
 use App\Order;
 use App\CreditInfo;
+use App\IngredientsUse;
 use Cartalyst\Stripe\Api\Orders;
 use Exception;
+use Illuminate\Support\Str;
 use Session;
 
 class MenuController extends Controller
@@ -150,6 +152,26 @@ class MenuController extends Controller
 
   public function postCheckout(Request $request)
   {
+
+    if (request('purchase') != null) {
+      $this->validate(request(), [
+			  'time2' => 'required',
+        'date2' => 'required',
+      ]);
+    }
+    else
+    {
+      $this->validate(request(), [
+			  'time1' => 'required',
+        'date1' => 'required',
+        'cc-address' => 'required',
+        'cc-city' => 'required',
+        'cc-province' => 'required',
+        'cc-postal' => 'required|regex:/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/',
+        'cc-name' => 'required',
+      ]);
+    }
+    
     $promo = 0;
     $user = auth()->user();
     $oldCart = Session::get('cart');
@@ -203,6 +225,13 @@ class MenuController extends Controller
     $invoice->paid = $type;
     $invoice->save();
     session()->put('cart', null);
+
+    if ($promo != null)
+    {
+      Promotions::where('code','=',session()->get('promotion')['code'])->first()->delete();
+    }
+    
+    session()->forget('promotion');
     // Successful purchase
     return redirect()->route("order.status")->with('success', 'Your order has been placed!');
   }
@@ -297,7 +326,11 @@ class MenuController extends Controller
     $menu_item = MenuItems::find($id);
 
     if ($menu_item->delete()) {
-      session()->flash('success', "$menu_item->name has been removed from the menu.");
+      OrderedItems::where('menu_id','=',$id)->delete();
+      IngredientsUse::where('menu_id','=',$id)->delete();
+
+       session()->flash('success', "$menu_item->name has been removed from the menu.");
+
     }
 
     return redirect('/editMenu');
@@ -382,7 +415,7 @@ class MenuController extends Controller
         $promo->start_date = request('startdate');
         $promo->end_date = request('enddate');
         $promo->discount = request('Discount');
-        // $promo->code = str_random(5);
+        $promo->code = Str::random(5);
         $promo->save();
       }
     }
